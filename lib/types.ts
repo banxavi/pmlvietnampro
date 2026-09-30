@@ -26,6 +26,8 @@ export type Lead = {
   message: string
   status: LeadStatus
   created_at: string
+  client_name: string | null
+  product_name: string | null
 }
 
 export function isLeadStatus(value: unknown): value is LeadStatus {

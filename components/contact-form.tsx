@@ -12,7 +12,17 @@ import { Textarea } from "@/components/ui/textarea"
 
 const initialState: LeadFormState = { ok: false, error: "" }
 
-export function ContactForm({ services }: { services: Service[] }) {
+export function ContactForm({
+  services,
+  presetService,
+  presetMessage,
+  submitLabel = "Gửi yêu cầu tư vấn",
+}: {
+  services: Service[]
+  presetService?: string
+  presetMessage?: string
+  submitLabel?: string
+}) {
   const formRef = useRef<HTMLFormElement>(null)
   const [state, formAction, pending] = useActionState(submitLead, initialState)
 
@@ -37,7 +47,12 @@ export function ContactForm({ services }: { services: Service[] }) {
 
       <div className="grid gap-2">
         <Label htmlFor="service">Dịch vụ quan tâm</Label>
-        {services.length > 0 ? (
+        {presetService ? (
+          <>
+            <input type="hidden" name="service" value={presetService} />
+            <p className="rounded-lg bg-paper px-3 py-2 text-sm text-ink">{presetService}</p>
+          </>
+        ) : services.length > 0 ? (
           <select
             id="service"
             name="service"
@@ -64,6 +79,7 @@ export function ContactForm({ services }: { services: Service[] }) {
           name="message"
           required
           placeholder="Mô tả nguyên liệu, thị trường hoặc nhà máy bạn đang cần."
+          defaultValue={presetMessage}
           className="min-h-28 bg-white"
         />
       </div>
@@ -82,7 +98,7 @@ export function ContactForm({ services }: { services: Service[] }) {
       ) : null}
 
       <Button type="submit" disabled={pending} className="h-11 w-full sm:w-fit sm:px-5">
-        {pending ? "Đang gửi..." : "Gửi yêu cầu tư vấn"}
+        {pending ? "Đang gửi..." : submitLabel}
       </Button>
     </form>
   )

@@ -51,12 +51,33 @@ export async function submitLead(
   if (service) messageLines.push(`Dịch vụ quan tâm: ${service}`)
 
   const supabase = await createClient()
+  const clientSlug = readText(formData, "client_slug", 40)
+  let clientId: string | null = null
+
+  if (clientSlug) {
+    const { data: client, error: clientError } = await supabase
+      .from("clients")
+      .select("id")
+      .eq("slug", clientSlug)
+      .maybeSingle()
+
+    if (clientError || !client) {
+      return {
+        ok: false,
+        error: "Không tìm thấy khách hàng để gắn yêu cầu.",
+      }
+    }
+
+    clientId = client.id
+  }
+
   const { error } = await supabase.from("leads").insert({
     full_name: fullName,
     email,
     phone,
     message: messageLines.join("\n"),
     status: "new",
+    client_id: clientId,
   })
 
   if (error) {

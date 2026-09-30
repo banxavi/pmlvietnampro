@@ -7,6 +7,8 @@ import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 const links = [
+  { href: "/quy-trinh", label: "Phạm vi triển khai" },
+  { href: "/du-lieu", label: "Dữ liệu khách hàng" },
   { href: "/#nang-luc", label: "Năng lực" },
   { href: "/#dich-vu", label: "Dịch vụ" },
   { href: "/#lien-he", label: "Liên hệ" },

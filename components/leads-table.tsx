@@ -66,7 +66,7 @@ export function LeadsTable({ initialLeads }: { initialLeads: Lead[] }) {
           setLeads((current) =>
             current.some((lead) => lead.id === incoming.id)
               ? current
-              : [incoming, ...current]
+              : [{ ...incoming, client_name: incoming.client_name ?? null, product_name: incoming.product_name ?? null }, ...current]
           )
           setFreshIds((current) => [incoming.id, ...current].slice(0, 8))
           setNotice(`${incoming.full_name} vừa gửi yêu cầu tư vấn`)
@@ -79,7 +79,16 @@ export function LeadsTable({ initialLeads }: { initialLeads: Lead[] }) {
           if (!isLead(payload.new)) return
           const incoming = payload.new
           setLeads((current) =>
-            current.map((lead) => (lead.id === incoming.id ? incoming : lead))
+            current.map((lead) =>
+              lead.id === incoming.id
+                ? {
+                    ...lead,
+                    ...incoming,
+                    client_name: incoming.client_name ?? lead.client_name,
+                    product_name: incoming.product_name ?? lead.product_name,
+                  }
+                : lead
+            )
           )
         }
       )
@@ -104,7 +113,7 @@ export function LeadsTable({ initialLeads }: { initialLeads: Lead[] }) {
       const matchesStatus = status === "all" || lead.status === status
       if (!matchesStatus) return false
       if (!needle) return true
-      return [lead.full_name, lead.email, lead.phone, lead.company, lead.message, lead.service]
+      return [lead.full_name, lead.email, lead.phone, lead.company, lead.message, lead.service, lead.client_name, lead.product_name]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
@@ -127,6 +136,14 @@ export function LeadsTable({ initialLeads }: { initialLeads: Lead[] }) {
               <p className="text-ink/60">{info.row.original.company || "—"}</p>
             </div>
           ),
+        }),
+        columnsHelper.accessor("product_name", {
+          header: "Sản phẩm",
+          cell: (info) => info.getValue() || "—",
+        }),
+        columnsHelper.accessor("client_name", {
+          header: "Website quản lý",
+          cell: (info) => info.getValue() || "Chưa gán",
         }),
         columnsHelper.accessor("email", {
           header: "Liên hệ",
